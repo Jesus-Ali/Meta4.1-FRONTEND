@@ -8,6 +8,8 @@
       <v-btn to="/personas" text>Personas</v-btn>
       <v-btn to="/estudiantes" text>Estudiantes</v-btn>
       <v-btn to="/asignaturas" text>Asignaturas</v-btn>
+      <v-btn to="/categoriaempleado" text>Categoria Empleado</v-btn>
+      <v-btn to="/inscripciones" text>Inscripciones</v-btn>
     </v-app-bar>
 
     <v-main>

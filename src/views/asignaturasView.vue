@@ -8,6 +8,7 @@
                         v-model="form.clave"
                         label="Clave"
                         required
+                        :readonly="modoEditar"
                     ></v-text-field>
                     <v-text-field
                         v-model="form.nombre"
@@ -111,7 +112,7 @@ export default {
         },
         async eliminarAsignatura(clave) {
         try {
-            await axios.delete(`http://localhost:3000/asignatura/${clave}`);
+            await axios.delete(`http://localhost:3000/asignaturas/${clave}`);
             this.obtenerAsignaturas();
         } catch (err) {
             console.error('Error al eliminar asignatura:', err);
