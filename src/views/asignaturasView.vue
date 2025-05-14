@@ -8,7 +8,6 @@
                         v-model="form.clave"
                         label="Clave"
                         required
-                        :readonly="modoEditar"
                     ></v-text-field>
                     <v-text-field
                         v-model="form.nombre"

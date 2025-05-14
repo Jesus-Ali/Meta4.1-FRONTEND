@@ -5,16 +5,14 @@
       <v-card-text>
         <v-form @submit.prevent="guardarInscripcion">
           <v-text-field
-            v-model="form.estudianteId"
-            label="ID de Estudiante"
+            v-model="form.estudianteMatricula"
+            label="Mat. de Estudiante"
             required
-            :readonly="modoEditar"
           ></v-text-field>
           <v-text-field
-            v-model="form.asignaturaId"
-            label="ID de Asignatura"
+            v-model="form.asignaturaClave"
+            label="Clave de Asignatura"
             required
-            :readonly="modoEditar"
           ></v-text-field>
           <v-text-field
             v-model="form.semestre"
@@ -38,19 +36,26 @@
           class="mt-5"
           item-value="id"
         >
-          <!-- <template v-slot:item.persona="{ item }">
-            {{ item.Persona?.nombre }}
-          </template>
 
-          <template v-slot:item.email="{ item }">
-            {{ item.Persona?.email }}
-          </template> -->
+        <template v-slot:item.estudianteNombre="{ item }">
+          {{ item.Estudiante?.Persona?.nombre || 'N/A' }}
+        </template>
+
+        <template v-slot:item.estudianteEmail="{ item }">
+          {{ item.Estudiante?.Persona?.email || 'N/A' }}
+        </template>
+        <template v-slot:item.asignaturaNombre="{ item }" >
+          {{  item.Asignatura?.nombre || 'N/A' }}
+        </template>
+        <template v-slot:item.asignaturaCreditos="{ item }" >
+          {{  item.Asignatura?.creditos || 'N/A' }}
+        </template>
 
           <template v-slot:item.actions="{ item }">
             <v-btn icon @click="editarInscripcion(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon @click="eliminarInscripcion(item.estudianteId, item.asignaturaId)">
+            <v-btn icon @click="eliminarInscripcion(item.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -69,15 +74,19 @@ export default {
       inscripciones: [],
       form: {
         id: null,
-        estudianteId: null,
-        asignaturaId: null,
+        estudianteMatricula: null,
+        asignaturaClave: null,
         semestre: null,
         calificacion: null
       },
       headers: [
         { title: 'ID', key: 'id' },
-        { title: 'Estudiante ID', key: 'estudianteId' },
-        { title: 'Asignatura ID', key: 'asignaturaId' },
+        { title: 'Mat. de Estudiante', key: 'estudianteMatricula' },
+        { title: 'Nombre Estudiante', key: 'estudianteNombre' },
+        { title: 'Email Estudiante', key: 'estudianteEmail' },
+        { title: 'Clave de Asignatura', key: 'asignaturaClave' },
+        { title: 'Nombre de Asignatura', key: 'asignaturaNombre' },
+        { title: 'Creditos de Asignatura', key: 'asignaturaCreditos' },
         { title: 'Semestre',  key: 'semestre'},
         {title: 'Calificacion', key: 'calificacion'},
         { title: 'Acciones', key: 'actions', sortable: false }
@@ -100,14 +109,14 @@ export default {
     async guardarInscripcion() {
       try {
         if (this.modoEditar) {
-          await axios.patch(`http://localhost:3000/inscripciones/${this.form.estudianteId}/${this.form.asignaturaId}`, {
+          await axios.patch(`http://localhost:3000/inscripciones/${this.form.id}`, {
             semestre: this.form.semestre,
             calificacion: this.form.calificacion
           });
         } else {
           await axios.post('http://localhost:3000/inscripciones', {
-            estudianteId: this.form.estudianteId,
-            asignaturaId: this.form.asignaturaId,
+            estudianteMatricula: this.form.estudianteMatricula,
+            asignaturaClave: this.form.asignaturaClave,
             semestre: this.form.semestre,
             calificacion: this.form.calificacion
           });
@@ -121,16 +130,16 @@ export default {
     editarInscripcion(inscripcion) {
       this.form = {
         id: inscripcion.id,
-        estudianteId: inscripcion.estudianteId,
-        asignaturaId: inscripcion.asignaturaId,
+        estudianteMatricula: inscripcion.estudianteMatricula,
+        asignaturaClave: inscripcion.asignaturaClave,
         semestre: inscripcion.semestre,
         calificacion: inscripcion.calificacion
       };
       this.modoEditar = true;
     },
-    async eliminarInscripcion(estudianteId, asignaturaId) {
+    async eliminarInscripcion(id) {
       try {
-        await axios.delete(`http://localhost:3000/inscripciones/${estudianteId}/${asignaturaId}`);
+        await axios.delete(`http://localhost:3000/inscripciones/${id}}`);
         this.obtenerInscripciones();
       } catch (err) {
         console.error('Error al eliminar inscripcion:', err);
@@ -138,8 +147,8 @@ export default {
     },
     reiniciarFormulario() {
       this.form = { id: null,
-        estudianteId: null,
-        asignaturaId: null,
+        estudianteMatricula: null,
+        asignaturaClave: null,
         semestre: null,
         calificacion: null
       };

@@ -5,13 +5,18 @@
       <v-card-text>
         <v-form @submit.prevent="guardarDocente">
           <v-text-field
-            v-model="form.matricula"
-            label="Matrícula"
+            v-model="form.numEmpleado"
+            label="Numero de Empleado"
             required
           ></v-text-field>
           <v-text-field
             v-model="form.personaId"
             label="ID de Persona"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="form.categoriaEmpleadoClave"
+            label="Clave de Categoria de Empleado"
             required
           ></v-text-field>
 
@@ -22,7 +27,7 @@
 
         <v-data-table
           :headers="headers"
-          :items="estudiantes"
+          :items="docentes"
           class="mt-5"
           item-value="id"
         >
@@ -34,11 +39,17 @@
             {{ item.Persona?.email }}
           </template>
 
+          <template v-slot:item.categoria="{ item }">
+            {{ item.CategoriaEmpleado?.nombre }}
+          </template>
+
+
+
           <template v-slot:item.actions="{ item }">
-            <v-btn icon @click="editarEstudiante(item)">
+            <v-btn icon @click="editarDocente(item)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon @click="eliminarEstudiante(item.id)">
+            <v-btn icon @click="eliminarDocente(item.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -54,72 +65,81 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      estudiantes: [],
+      docentes: [],
       form: {
         id: null,
-        matricula: '',
-        personaId: ''
+        numEmpleado: null,
+        personaId: '',
+        categoriaEmpleadoClave: null
       },
       headers: [
         { title: 'ID', key: 'id' },
-        { title: 'Matrícula', key: 'matricula' },
-        { title: 'Persona', key: 'personaId' },
-        { title: 'Nombre',  key: 'persona'},
-        {title: 'Email', key: 'email'},
+        { title: 'Numero de Empleado', key: 'numEmpleado'},
+        { title: 'ID de Persona', key: 'personaId'},
+        { title: 'Nombre', key: 'persona'},
+        { title: 'Email', key: 'email'},
+        { title: 'Clave de Categoria de Empleado', key: 'categoriaEmpleadoClave'},
+        { title: 'Nombre de Categoria de Empleado', key: 'categoria'},
         { title: 'Acciones', key: 'actions', sortable: false }
       ],
       modoEditar: false
     };
   },
   created() {
-    this.obtenerEstudiantes();
+    this.obtenerDocentes();
   },
   methods: {
-    async obtenerEstudiantes() {
+    async obtenerDocentes() {
       try {
-        const res = await axios.get('http://localhost:3000/estudiantes');
-        this.estudiantes = res.data;
+        const res = await axios.get('http://localhost:3000/docentes');
+        this.docentes = res.data;
       } catch (error) {
-        console.error('Error al obtener estudiantes:', error);
+        console.error('Error al obtener docentes:', error);
       }
     },
-    async guardarEstudiante() {
+    async guardarDocente() {
       try {
         if (this.modoEditar) {
-          await axios.put(`http://localhost:3000/estudiantes/${this.form.id}`, {
-            matricula: this.form.matricula,
-            personaId: this.form.personaId
+          await axios.put(`http://localhost:3000/docentes/${this.form.id}`, {
+            numEmpleado: this.form.numEmpleado,
+            personaId: this.form.personaId,
+            categoriaEmpleadoClave: this.form.categoriaEmpleadoClave
           });
         } else {
-          await axios.post('http://localhost:3000/estudiantes', {
-            matricula: this.form.matricula,
-            personaId: this.form.personaId
+          await axios.post('http://localhost:3000/docentes', {
+            numEmpleado: this.form.numEmpleado,
+            personaId: this.form.personaId,
+            categoriaEmpleadoClave: this.form.categoriaEmpleadoClave
           });
         }
         this.reiniciarFormulario();
-        this.obtenerEstudiantes();
+        this.obtenerDocentes();
       } catch (err) {
-        console.error('Error al guardar estudiante:', err);
+        console.error('Error al guardar docente:', err);
       }
     },
-    editarEstudiante(estudiante) {
+    editarDocente(docente) {
       this.form = {
-        id: estudiante.id,
-        matricula: estudiante.matricula,
-        personaId: estudiante.personaId
+        id: docente.id,
+        numEmpleado: docente.numEmpleado,
+        personaId: docente.personaId,
+        categoriaEmpleadoClave: docente.categoriaEmpleadoClave
       };
       this.modoEditar = true;
     },
-    async eliminarEstudiante(id) {
+    async eliminarDocente(id) {
       try {
-        await axios.delete(`http://localhost:3000/estudiantes/${id}`);
-        this.obtenerEstudiantes();
+        await axios.delete(`http://localhost:3000/docentes/${id}`);
+        this.obtenerDocentes();
       } catch (err) {
-        console.error('Error al eliminar estudiante:', err);
+        console.error('Error al eliminar docente:', err);
       }
     },
     reiniciarFormulario() {
-      this.form = { id: null, matricula: '', personaId: '' };
+      this.form = { id: null,
+        numEmpleado: null,
+        personaId: '',
+        categoriaEmpleadoClave: null };
       this.modoEditar = false;
     }
   }
